@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include <math.h>
 //Ohm's Law Calculator
 
 double calculateVoltage(double resistance, double current);
@@ -16,14 +18,72 @@ char *read_line();
 
 char return_last_char(char *input[]);
 
+void processInput(char *input[], float *resistance, float *voltage, float *current);
+
 int main() {
     char validUnits[] = {'U', 'u', 'R', 'r', 'V', 'v'};
     printf("Welcome to my OHMS LAW CALCULATOR!\n");
-    float resistance;
-    float voltage;
-    float current;
+    showOptions();
+    float resistance, voltage, current;
     char *text = read_line();
+    if (text == NULL) return 1;
+    char *lines[] = {text, NULL};
+    processInput(lines, &resistance, &voltage, &current);
+
+    if (isnan(voltage)) {
+        printf("U = %g V\n", calculateVoltage(resistance, current));
+    } else if (isnan(current)) {
+        printf("I = %g A\n", calculateCurrent(voltage, resistance));
+    } else if (isnan(resistance)) {
+        printf("R = %g Ohm\n", calculateResistance(current, voltage));
+    } else {
+        printf("All three values given, nothing to calculate.\n");
+    }
+
+    free(text);
     return 0;
+}
+
+void processInput(char *input[], float *resistance, float *voltage, float *current) {
+    *resistance = NAN;
+    *voltage = NAN;
+    *current = NAN;
+
+    if (input == NULL) return;
+    //Parse the input for a semi colon
+    for (size_t i = 0; input[i] != NULL; i++) {
+        char *part = strtok(input[i], ";");
+
+        while (part != NULL) {
+            char *end;
+            float value = strtof(part, &end);
+            if (end == part) {
+                printf("Could not the number in \"%s\"\n", part);
+            } else {
+                while (isspace((unsigned char) *end)) end++;
+
+                switch (*end) {
+                    case 'V': case 'v':
+                    case 'U': case 'u':
+                        *voltage = value;
+                        break;
+                    case 'I': case 'i':
+                    case 'A': case 'a':
+                        *current = value;
+                        break;
+                    case 'R': case 'r':
+                        *resistance = value;
+                        break;
+                    case '\0':
+                        printf("Missing unit after %g\n", value);
+                        break;
+                    default:
+                        printf("Unknown unit '%c' in \"%s\"\n", *end, part);
+                }
+            }
+            part = strtok(NULL, ";");
+        }
+    }
 }
 
 char return_last_char(char *input[]) {
@@ -67,10 +127,7 @@ char *read_line() {
 
 
 void showOptions() {
-    printf("Enter 1 to Calculate for Voltage (V)\n");
-    printf("Enter 2 to Calculate for Resistance (R)\n");
-    printf("Enter 3 to Calculate for Current (I)\n");
-    printf("Enter 4 to Exit\n");
+    printf("Enter your values with a semicolon to seperate (e.g.: 2V; 3I)\n");
 }
 
 double calculateVoltage(double resistance, double current) {

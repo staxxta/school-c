@@ -23,24 +23,37 @@ void processInput(char *input[], float *resistance, float *voltage, float *curre
 int main() {
     char validUnits[] = {'U', 'u', 'R', 'r', 'V', 'v'};
     printf("Welcome to my OHMS LAW CALCULATOR!\n");
-    showOptions();
     float resistance, voltage, current;
-    char *text = read_line();
-    if (text == NULL) return 1;
-    char *lines[] = {text, NULL};
-    processInput(lines, &resistance, &voltage, &current);
 
-    if (isnan(voltage)) {
-        printf("U = %g V\n", calculateVoltage(resistance, current));
-    } else if (isnan(current)) {
-        printf("I = %g A\n", calculateCurrent(voltage, resistance));
-    } else if (isnan(resistance)) {
-        printf("R = %g Ohm\n", calculateResistance(current, voltage));
-    } else {
-        printf("All three values given, nothing to calculate.\n");
+    while (true) {
+        showOptions();
+        char *text = read_line();
+        if (text == NULL) return 1;
+
+        // Exit when the user enters "X" (or "x"), or when input ends (Ctrl+D)
+        if (strcmp(text, "X") == 0 || strcmp(text, "x") == 0
+            || (text[0] == '\0' && feof(stdin))) {
+            free(text);
+            printf("Goodbye!\n");
+            break;
+        }
+
+        char *lines[] = {text, NULL};
+        processInput(lines, &resistance, &voltage, &current);
+
+        if (isnan(voltage)) {
+            printf("U = %g V\n", calculateVoltage(resistance, current));
+        } else if (isnan(current)) {
+            printf("I = %g A\n", calculateCurrent(voltage, resistance));
+        } else if (isnan(resistance)) {
+            printf("R = %g Ohm\n", calculateResistance(current, voltage));
+        } else {
+            printf("All three values given, nothing to calculate.\n");
+        }
+
+        free(text);
     }
 
-    free(text);
     return 0;
 }
 

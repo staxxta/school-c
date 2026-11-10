@@ -1,0 +1,49 @@
+@startuml
+  start
+
+  :running = true;
+  :Print "Hello and Welcome to my Program\nfor EUR/USD conversion";
+
+  while (running?) is (yes)
+    partition "showOptions" {
+      :Print "Please select the option you want below:";
+      :Print "Press 1 for converting from EUR to USD";
+      :Print "Press 2 for converting from USD to EUR";
+      :Print "Press 3 to exit";
+    }
+
+    :Read currentChoice;
+
+    switch (currentChoice?)
+      case (1)
+        partition "eur_to_usd" {
+          :Print "Enter your EURO Value:";
+          :Read value;
+          if (value == 0.0?) then (yes)
+            :Print value + " USD";
+          else (no)
+            :usdValue = value * 1.34;
+            :Print usdValue + " USD";
+          endif
+        }
+      case (2)
+        partition "usd_to_eur" {
+          :Print "Enter your USD Value:";
+          :Read value;
+          if (value == 0.0?) then (yes)
+            :Print value + " USD";
+          else (no)
+            :eurValue = value / 1.34;
+            :Print eurValue + " EUR";
+          endif
+        }
+      case (3)
+        :return 0;
+        stop
+      case (other)
+        :Print "ERROR: Invalid Entry, please try again\nor press '3' to exit";
+    endswitch
+  endwhile (no)
+
+  stop
+@enduml

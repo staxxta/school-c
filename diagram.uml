@@ -1,0 +1,64 @@
+  start
+
+  :Print "Welcome to my OHMS LAW CALCULATOR!";
+  :Show options\n(enter values with ';' separator, e.g. "2V; 3I");
+  :Read input line;
+
+  if (input == NULL?) then (yes)
+    :return 1;
+    stop
+  endif
+
+  :Initialize resistance, voltage, current = NAN;
+
+  partition "processInput" {
+    :Split input by ';';
+    repeat
+      :Parse next token;
+      :Read numeric value;
+      if (no number found?) then (yes)
+        :Print "Could not find the number";
+      else (no)
+        :Read unit character after value;
+        switch (unit?)
+          case (V / U / v / u)
+            :voltage = value;
+          case (I / i / A / a)
+            :current = value;
+          case (R / r)
+            :resistance = value;
+          case ('\0')
+            :Print "Missing unit";
+          case (other)
+            :Print "Unknown unit";
+        endswitch
+      endif
+    repeat while (more tokens?) is (yes)
+    ->no;
+  }
+
+  if (voltage == NAN?) then (yes)
+    :U = resistance * current;
+    :Print "U = ... V";
+  elseif (current == NAN?) then (yes)
+    if (resistance == 0?) then (yes)
+      :Print "Undefined!";
+    else (no)
+      :I = voltage / resistance;
+      :Print "I = ... A";
+    endif
+  elseif (resistance == NAN?) then (yes)
+    if (current == 0?) then (yes)
+      :Print "Undefined!";
+    else (no)
+      :R = voltage / current;
+      :Print "R = ... Ohm";
+    endif
+  else (no)
+    :Print "All three values given,\nnothing to calculate.";
+  endif
+
+  :Free input buffer;
+
+  stop
+  @enduml

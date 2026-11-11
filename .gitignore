@@ -3,3 +3,6 @@
 a.out
 *.exe
 build/
+
+# macOS
+.DS_Store

@@ -16,7 +16,7 @@ int main() {
 
 void sort(int input[], size_t length) {
     for(size_t i = 0; i < length; i++) {
-        for (size_t j = 0; j < length; j++) {
+        for (size_t j = 0; j + 1 < length - i; j++) {
             if (input[j] > input[j + 1]) {
                 input[j] = input[j] ^ input[j + 1];
                 input[j + 1] = input[j] ^ input[j + 1];
